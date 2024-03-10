@@ -22,11 +22,15 @@ jobs:
       - name: Build JAR with Maven
         run: mvn clean install
 
+      - name: List files in target directory
+        run: ls target
+
       - name: Deploy to AWS Lambda
         run: |
           aws lambda update-function-code \
             --function-name fof \
             --zip-file fileb://$(pwd)/target/fof-0.0.1.jar
+            --debug
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
