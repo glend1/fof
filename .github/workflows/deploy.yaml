@@ -25,6 +25,9 @@ jobs:
       - name: List files in target directory
         run: ls target
 
+      - name: List files in target directory
+        run: ls target
+
       - name: Deploy to AWS Lambda
         run: |
           aws lambda update-function-code \
