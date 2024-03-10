@@ -21,12 +21,8 @@ jobs:
 
       - name: Build JAR with Maven
         run: mvn clean install
-
-      - name: List files in target directory
-        run: ls target
-
-      - name: List files in target directory
-        run: ls target
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
 
       - name: Deploy to AWS Lambda
         run: |
