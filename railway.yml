@@ -1,0 +1,14 @@
+# railway.yml
+
+name: my-java-app
+services:
+  web:
+    builder: javalin
+
+environments:
+  production:
+    buildCommand: mvn package
+    runCommand: java -jar target/fof-0.0.1.jar
+
+plugins:
+  - javalin
