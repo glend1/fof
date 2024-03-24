@@ -8,14 +8,7 @@ services:
 environments:
   production:
     buildCommand: mvn package
-    runCommand: java -jar target/fof-0.1.jar
-    build:
-      commands:
-        - cp pom.xml ./Dockerfile
-        - docker build -t my-app .
-
-run:
-  command: docker run -p 8080:8080 my-app
+    runCommand: java -jar target/fof-0.1-jar-with-dependencies.jar
 
 plugins:
   - javalin
