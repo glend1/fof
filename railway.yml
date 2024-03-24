@@ -7,7 +7,7 @@ services:
 
 environments:
   production:
-    buildCommand: mvn package
+    buildCommand: mvn clean compile assembly:single
     runCommand: java -jar target/fof-0.1-jar-with-dependencies.jar
 
 plugins:
