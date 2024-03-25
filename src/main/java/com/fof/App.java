@@ -41,9 +41,9 @@ public class App extends ListenerAdapter {
             event.getChannel().sendMessage(pokemonName + " " + result).queue();
         }
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!commandlist")) {
-            String commandList =
-                    "Command List:\n" + "!commandlist - Display the list of available commands\n";
-            // + "!smashorpass - Get a random Pokemon name and whether to smash or pass\n";
+            String commandList = "Command List:\n"
+                    + "!commandlist - Display the list of available commands\n"
+                    + "!smashorpass - Get a random Pokemon name and whether to smash or pass\n";
             event.getChannel().sendMessage(commandList).queue();
         }
     }
