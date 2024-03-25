@@ -35,11 +35,11 @@ public class App extends ListenerAdapter {
             event.getChannel().sendMessage("Cum").queue();
         if (Math.random() <= .00001)
             event.getChannel().sendMessage("PissCum").queue();
-        // if (event.getMessage().getContentRaw().toLowerCase().startsWith("!smashorpass")) {
-        // String pokemonName = getRandomPokemonName();
-        // String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
-        // event.getChannel().sendMessage(pokemonName + " " + result).queue();
-        // }
+        if (event.getMessage().getContentRaw().toLowerCase().startsWith("!smashorpass")) {
+            String pokemonName = getRandomPokemonName();
+            String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
+            event.getChannel().sendMessage(pokemonName + " " + result).queue();
+        }
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!commandlist")) {
             String commandList =
                     "Command List:\n" + "!commandlist - Display the list of available commands\n";
