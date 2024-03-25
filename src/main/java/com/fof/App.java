@@ -28,7 +28,7 @@ public class App extends ListenerAdapter {
                     .sendMessage("Good afternoon " + event.getAuthor().getAsMention() + "!")
                     .queue();
         if (event.getMessage().getContentRaw().toLowerCase().contains("fof"))
-            event.getChannel().sendMessage(":fof:").queue();
+            event.getChannel().sendMessage("<:fof:1221889413303369900>").queue();
         if (Math.random() <= .0001)
             event.getChannel().sendMessage("Piss").queue();
         if (Math.random() <= .0001)
