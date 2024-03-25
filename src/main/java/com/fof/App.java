@@ -14,15 +14,18 @@ public class App extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot())
             return; // Ignore messages from other bots
-        if (event.getMessage().getContentRaw().toLowerCase().contains("good morning nerds"))
+        if (event.getMessage().getContentRaw().toLowerCase().contains("good morning"))
             event.getChannel().sendMessage("Good morning " + event.getAuthor().getAsMention() + "!")
                     .queue();
-        if (event.getMessage().getContentRaw().toLowerCase().contains("good afternoon nerds"))
+        if (event.getMessage().getContentRaw().toLowerCase().contains("good afternoon"))
             event.getChannel()
                     .sendMessage("Good afternoon " + event.getAuthor().getAsMention() + "!")
                     .queue();
         if (event.getMessage().getContentRaw().toLowerCase().contains("fof"))
             event.getChannel().sendMessage(":fof:").queue();
+        if (Math.random() <= .00001) {
+            event.getChannel().sendMessage("PissCum").queue();
+        }
     }
 
     public static void buildBot() {
