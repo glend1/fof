@@ -23,9 +23,12 @@ public class App extends ListenerAdapter {
                     .queue();
         if (event.getMessage().getContentRaw().toLowerCase().contains("fof"))
             event.getChannel().sendMessage(":fof:").queue();
-        if (Math.random() <= .00001) {
+        if (Math.random() <= .0001)
+            event.getChannel().sendMessage("Piss").queue();
+        if (Math.random() <= .0001)
+            event.getChannel().sendMessage("Cum").queue();
+        if (Math.random() <= .00001)
             event.getChannel().sendMessage("PissCum").queue();
-        }
     }
 
     public static void buildBot() {
