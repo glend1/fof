@@ -36,7 +36,10 @@ public class App extends ListenerAdapter {
         if (Math.random() <= .00001)
             event.getChannel().sendMessage("PissCum").queue();
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!smashorpass")) {
-            String pokemonName = getRandomPokemonName();
+            String pokemonName = null;
+            while (pokemonName != null) { // The pkmn API has gaps.
+                pokemonName = getRandomPokemonName();
+            }
             String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
             event.getChannel().sendMessage(pokemonName + " " + result).queue();
         }
