@@ -36,9 +36,11 @@ public class App extends ListenerAdapter {
         if (Math.random() <= .00001)
             event.getChannel().sendMessage("PissCum").queue();
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!smashorpass")) {
-            String pokemonName = null;
-            while (pokemonName != null) { // The pkmn API has gaps.
-                pokemonName = getRandomPokemonName();
+            String pokemonName = getRandomPokemonName();
+            if (pokemonName == null) {
+                pokemonName = getRandomStringFromArray(new String[] 
+                {"Ponyta", "Tyrogue", "Ralts", "Gabite", "Heatmor", "Helioptile", "Jangmo-o", "Coalossal", "Flutter Mane"});
+                // Picks a random Pokemon from one of the existing generations
             }
             String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
             event.getChannel().sendMessage(pokemonName + " " + result).queue();
