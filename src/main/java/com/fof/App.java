@@ -37,11 +37,9 @@ public class App extends ListenerAdapter {
             event.getChannel().sendMessage("PissCum").queue();
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!smashorpass")) {
             String pokemonName = getRandomPokemonName();
-            if (pokemonName == null) {
-                pokemonName = getRandomStringFromArray(new String[] 
-                {"Ponyta", "Tyrogue", "Ralts", "Gabite", "Heatmor", "Helioptile", "Jangmo-o", "Coalossal", "Flutter Mane"});
-                // Picks a random Pokemon from one of the existing generations
-            }
+            if (pokemonName == null)// Picks a random Pokemon from one of the existing generations
+                pokemonName = getRandomStringFromArray(new String[] {"ponyta", "tyrogue", "ralts", 
+                    "gabite", "heatmor", "helioptile", "komala", "coalossal", "bramblin"});
             String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
             event.getChannel().sendMessage(pokemonName + " " + result).queue();
         }
