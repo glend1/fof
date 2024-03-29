@@ -4,14 +4,19 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import ch.qos.logback.classic.Logger;
 
 public class App extends ListenerAdapter {
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(App.class);
+
     public static void main(String[] args) throws Exception {
         buildBot();
     }
@@ -36,9 +41,12 @@ public class App extends ListenerAdapter {
         if (Math.random() <= .00001)
             event.getChannel().sendMessage("PissCum").queue();
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!smashorpass")) {
-            String pokemonName = getRandomPokemonName();
+            PokemonInfo pokemon = getRandomPokemonName();
             String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
-            event.getChannel().sendMessage(pokemonName + " " + result).queue();
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle(pokemon.getName());
+            embedBuilder.setImage(pokemon.getImage());
+            event.getChannel().sendMessage(result).addEmbeds(embedBuilder.build()).queue();
         }
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!fight")) {
             String[] args = event.getMessage().getContentRaw().split(" ");
@@ -66,27 +74,38 @@ public class App extends ListenerAdapter {
         return array[randomIndex];
     }
 
-    private String getRandomPokemonName() {
+    private PokemonInfo getRandomPokemonName() {
         try {
-            // Make a request to the Pokemon API
-            String apiUrl = "https://pokeapi.co/api/v2/pokemon/";
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiUrl)).build();
-            HttpResponse<String> response =
-                    client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            // Parse the response to get a random Pokemon name
+            // set up the HTTP client and request
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response.body());
-            int count = root.get("count").asInt();
-            int randomIndex = (int) (Math.random() * count);
-            String pokemonUrl = apiUrl + randomIndex;
-            request = HttpRequest.newBuilder().uri(URI.create(pokemonUrl)).build();
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            JsonNode pokemonData = mapper.readTree(response.body());
-            String pokemonName = pokemonData.get("name").asText();
+            String pokemonUrl = "https://pokeapi.co/api/v2/pokemon/";
+            String pokedexUrl = "https://pokeapi.co/api/v2/pokemon-species/";
+            HttpClient client = HttpClient.newHttpClient();
 
-            return pokemonName;
+            logger.info("Fetching Pokedex data from " + pokedexUrl);
+            HttpRequest pokedexRequest =
+                    HttpRequest.newBuilder().uri(URI.create(pokedexUrl)).build();
+            HttpResponse<String> pokedexResponse =
+                    client.send(pokedexRequest, HttpResponse.BodyHandlers.ofString());
+            JsonNode pokedexData = mapper.readTree(pokedexResponse.body());
+
+            int count = pokedexData.get("count").asInt();
+            int randomPokemon = (int) (Math.random() * count);
+            String url = pokemonUrl + randomPokemon;
+
+            logger.info("Fetching Pokemon data from " + url);
+            HttpRequest pokemonRequest = HttpRequest.newBuilder().uri(URI.create(url)).build();
+            HttpResponse<String> pokemonResponse =
+                    client.send(pokemonRequest, HttpResponse.BodyHandlers.ofString());
+            JsonNode pokemonData = mapper.readTree(pokemonResponse.body());
+
+            String pokemonName = pokemonData.get("name").asText();
+            String imageUrl = pokemonData.get("sprites").get("front_default").asText();
+
+            PokemonInfo pokemon = new PokemonInfo(pokemonName, imageUrl);
+            logger.info(pokemon.toString());
+
+            return pokemon;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
