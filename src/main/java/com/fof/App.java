@@ -40,10 +40,23 @@ public class App extends ListenerAdapter {
             String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
             event.getChannel().sendMessage(pokemonName + " " + result).queue();
         }
+        if (event.getMessage().getContentRaw().toLowerCase().startsWith("!fight")) {
+            String[] args = event.getMessage().getContentRaw().split(" ");
+            if (args.length != 2) {
+                event.getChannel().sendMessage("Usage: !fight <user>").queue();
+                return;
+            }
+            boolean winner = Math.random() < 0.5;
+            String message =
+                    winner ? args[1] + " wins!" : event.getAuthor().getAsMention() + " wins!";
+            event.getChannel().sendMessage(message).queue();
+        }
+
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!commandlist")) {
             String commandList = "Command List:\n"
                     + "!commandlist - Display the list of available commands\n"
-                    + "!smashorpass - Get a random Pokemon name and whether to smash or pass\n";
+                    + "!smashorpass - Get a random Pokemon name and whether to smash or pass\n"
+                    + "!fight <user> - Fight against another user\n";
             event.getChannel().sendMessage(commandList).queue();
         }
     }
