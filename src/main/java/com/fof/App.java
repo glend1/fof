@@ -44,9 +44,10 @@ public class App extends ListenerAdapter {
             PokemonInfo pokemon = getRandomPokemonName();
             String result = getRandomStringFromArray(new String[] {"Smash", "Pass"});
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle(pokemon.getName());
+            embedBuilder.setTitle(pokemon.getName() + " (#" + pokemon.getPokedexNumber() + ")");
             embedBuilder.setImage(pokemon.getImage());
-            event.getChannel().sendMessage(result).addEmbeds(embedBuilder.build()).queue();
+            event.getChannel().sendMessage(event.getAuthor().getAsMention() + " would " + result
+                    + " " + pokemon.getName() + "!").addEmbeds(embedBuilder.build()).queue();
         }
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!fight")) {
             String[] args = event.getMessage().getContentRaw().split(" ");
@@ -91,18 +92,26 @@ public class App extends ListenerAdapter {
 
             int count = pokedexData.get("count").asInt();
             int randomPokemon = (int) (Math.random() * count);
-            String url = pokemonUrl + randomPokemon;
+            String imageUrl = pokemonUrl + randomPokemon;
+            String dataUrl = pokedexUrl + randomPokemon;
 
-            logger.info("Fetching Pokemon data from " + url);
-            HttpRequest pokemonRequest = HttpRequest.newBuilder().uri(URI.create(url)).build();
+            logger.info("Fetching Pokemon data from " + dataUrl);
+            HttpRequest dataRequest = HttpRequest.newBuilder().uri(URI.create(dataUrl)).build();
+            HttpResponse<String> dataResponse =
+                    client.send(dataRequest, HttpResponse.BodyHandlers.ofString());
+            JsonNode PokemonData = mapper.readTree(dataResponse.body());
+            String pokemonName = PokemonData.get("name").asText();
+            pokemonName = pokemonName.substring(0, 1).toUpperCase() + pokemonName.substring(1);
+            int pokedexNumber = PokemonData.get("id").asInt();
+
+            logger.info("Fetching Pokemon image from " + imageUrl);
+            HttpRequest pokemonRequest = HttpRequest.newBuilder().uri(URI.create(imageUrl)).build();
             HttpResponse<String> pokemonResponse =
                     client.send(pokemonRequest, HttpResponse.BodyHandlers.ofString());
-            JsonNode pokemonData = mapper.readTree(pokemonResponse.body());
+            JsonNode pokemonImage = mapper.readTree(pokemonResponse.body());
+            String spriteUrl = pokemonImage.get("sprites").get("front_default").asText();
 
-            String pokemonName = pokemonData.get("name").asText();
-            String imageUrl = pokemonData.get("sprites").get("front_default").asText();
-
-            PokemonInfo pokemon = new PokemonInfo(pokemonName, imageUrl);
+            PokemonInfo pokemon = new PokemonInfo(pokemonName, spriteUrl, pokedexNumber);
             logger.info(pokemon.toString());
 
             return pokemon;
