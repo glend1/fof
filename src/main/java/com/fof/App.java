@@ -29,6 +29,42 @@ public class App extends ListenerAdapter {
                     .queue();
         if (event.getMessage().getContentRaw().toLowerCase().contains("fof"))
             event.getChannel().sendMessage("<:fof:1221889413303369900>").queue();
+        if (event.getMessage().getContentRaw().toLowerCase().startsWith("!cointoss")) {
+            String result = getRandomStringFromArray(new String[] {"Heads", "Tails"});
+            event.getChannel().sendMessage(result).queue();
+        }
+        if (event.getMessage().getContentRaw().toLowerCase().startsWith("!roll")) {
+            String[] args = event.getMessage().getContentRaw().split(" ");
+            if (args.length != 2) {
+                event.getChannel().sendMessage("Usage: !roll <dice>").queue();
+                return;
+            }
+            try {
+                String dice = args[1].toLowerCase();
+                int result = 0;
+                if (dice.equals("d4")) {
+                    result = (int) (Math.random() * 4) + 1;
+                } else if (dice.equals("d6")) {
+                    result = (int) (Math.random() * 6) + 1;
+                } else if (dice.equals("d8")) {
+                    result = (int) (Math.random() * 8) + 1;
+                } else if (dice.equals("d10")) {
+                    result = (int) (Math.random() * 10) + 1;
+                } else if (dice.equals("d12")) {
+                    result = (int) (Math.random() * 12) + 1;
+                } else if (dice.equals("d20")) {
+                    result = (int) (Math.random() * 20) + 1;
+                } else {
+                    event.getChannel()
+                            .sendMessage("Invalid dice. Available dice: d4, d6, d8, d10, d12, d20")
+                            .queue();
+                    return;
+                }
+                event.getChannel().sendMessage("You rolled a " + result + " on a " + dice).queue();
+            } catch (NumberFormatException e) {
+                event.getChannel().sendMessage("Invalid dice").queue();
+            }
+        }
         if (Math.random() <= .0001)
             event.getChannel().sendMessage("Piss").queue();
         if (Math.random() <= .0001)
@@ -56,7 +92,8 @@ public class App extends ListenerAdapter {
             String commandList = "Command List:\n"
                     + "!commandlist - Display the list of available commands\n"
                     + "!smashorpass - Get a random Pokemon name and whether to smash or pass\n"
-                    + "!fight <user> - Fight against another user\n";
+                    + "!fight <user> - Fight against another user\n" + "!cointoss - Flip a coin\n"
+                    + "!roll <dice> - Roll a dice (available dice: d4, d6, d8, d10, d12, d20)\n";
             event.getChannel().sendMessage(commandList).queue();
         }
     }
