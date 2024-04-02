@@ -32,7 +32,8 @@ public class App extends ListenerAdapter {
             event.getChannel()
                     .sendMessage("Good afternoon " + event.getAuthor().getAsMention() + "!")
                     .queue();
-        if (event.getMessage().getContentRaw().toLowerCase().contains("fof") || event.getMessage().getContentRaw().toLowerCase().contains("f'of")) {
+        if (event.getMessage().getContentRaw().toLowerCase().contains("fof")
+                || event.getMessage().getContentRaw().toLowerCase().contains("f'of"))
             event.getChannel().sendMessage("<:fof:1221889413303369900>").queue();
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!cointoss")) {
             String result = getRandomStringFromArray(new String[] {"Heads", "Tails"});
