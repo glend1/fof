@@ -196,17 +196,20 @@ public class App extends ListenerAdapter {
 
     private static List<String> extractMeanings(JsonNode jsonNode) {
         List<String> meaningsList = new ArrayList<>();
-
-        for (JsonNode wordNode : jsonNode) {
-            JsonNode meaningsNode = wordNode.get("meanings");
-            for (JsonNode meaningNode : meaningsNode) {
-                String partOfSpeech = meaningNode.get("partOfSpeech").asText();
-                JsonNode definitionsNode = meaningNode.get("definitions");
-                for (JsonNode definitionNode : definitionsNode) {
-                    String definition = definitionNode.get("definition").asText();
-                    meaningsList.add(partOfSpeech + ": " + definition);
+        try {
+            for (JsonNode wordNode : jsonNode) {
+                JsonNode meaningsNode = wordNode.get("meanings");
+                for (JsonNode meaningNode : meaningsNode) {
+                    String partOfSpeech = meaningNode.get("partOfSpeech").asText();
+                    JsonNode definitionsNode = meaningNode.get("definitions");
+                    for (JsonNode definitionNode : definitionsNode) {
+                        String definition = definitionNode.get("definition").asText();
+                        meaningsList.add(partOfSpeech + ": " + definition);
+                    }
                 }
             }
+        } catch (NullPointerException e) {
+            return meaningsList;
         }
 
         return meaningsList;
