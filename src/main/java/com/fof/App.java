@@ -1,9 +1,12 @@
 package com.fof;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,13 +100,45 @@ public class App extends ListenerAdapter {
                     winner ? args[1] + " wins!" : event.getAuthor().getAsMention() + " wins!";
             event.getChannel().sendMessage(message).queue();
         }
+        if (event.getMessage().getContentRaw().toLowerCase().startsWith("!define")) {
+            String[] args = event.getMessage().getContentRaw().split(" ");
+            if (args.length != 2) {
+                event.getChannel().sendMessage("Usage: !define <word>").queue();
+                return;
+            }
+            String word = args[1];
+            logger.info("Fetching definition for " + word);
+            String apiUrl = "https://api.dictionaryapi.dev/api/v2/entries/en/" + word;
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiUrl)).build();
+            try {
+                HttpResponse<String> response =
+                        client.send(request, HttpResponse.BodyHandlers.ofString());
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonNode = mapper.readTree(response.body());
+                List<String> meaningsList = extractMeanings(jsonNode);
+                if (meaningsList.isEmpty()) {
+                    event.getChannel().sendMessage("No definition found for " + word).queue();
+                    return;
+                } else {
+                    StringBuilder meanings = new StringBuilder();
+                    for (String meaning : meaningsList) {
+                        meanings.append(meaning).append("\n");
+                    }
+                    event.getChannel().sendMessage(meanings.toString()).queue();
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!commandlist")) {
             String commandList = "Command List:\n"
                     + "!commandlist - Display the list of available commands\n"
                     + "!smashorpass - Get a random Pokemon name and whether to smash or pass\n"
                     + "!fight <user> - Fight against another user\n" + "!cointoss - Flip a coin\n"
-                    + "!roll <dice> - Roll a dice (available dice: d4, d6, d8, d10, d12, d20)\n";
+                    + "!roll <dice> - Roll a dice (available dice: d4, d6, d8, d10, d12, d20)\n"
+                    + "!define <word> - Get the definition of a word\n";
             event.getChannel().sendMessage(commandList).queue();
         }
     }
@@ -157,6 +192,27 @@ public class App extends ListenerAdapter {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static List<String> extractMeanings(JsonNode jsonNode) {
+        List<String> meaningsList = new ArrayList<>();
+        try {
+            for (JsonNode wordNode : jsonNode) {
+                JsonNode meaningsNode = wordNode.get("meanings");
+                for (JsonNode meaningNode : meaningsNode) {
+                    String partOfSpeech = meaningNode.get("partOfSpeech").asText();
+                    JsonNode definitionsNode = meaningNode.get("definitions");
+                    for (JsonNode definitionNode : definitionsNode) {
+                        String definition = definitionNode.get("definition").asText();
+                        meaningsList.add(partOfSpeech + ": " + definition);
+                    }
+                }
+            }
+        } catch (NullPointerException e) {
+            return meaningsList;
+        }
+
+        return meaningsList;
     }
 
     public static void buildBot() {
