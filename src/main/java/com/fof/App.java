@@ -44,7 +44,7 @@ public class App extends ListenerAdapter {
         }
         if (event.getMessage().getContentRaw().toLowerCase().startsWith("!roll")) {
             String[] args = event.getMessage().getContentRaw().split(" ");
-            if (args.length != 2) {
+            if (args.length < 2) {
                 event.getChannel().sendMessage("Usage: !roll <dice>").queue();
                 return;
             }
